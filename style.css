@@ -577,3 +577,28 @@ footer > span {
     font-size: 15px;
   }
 }
+
+.project,
+.about,
+.service,
+.contact {
+  opacity: 0;
+  transform: translateY(25px);
+  transition: opacity .7s ease, transform .7s ease;
+}
+
+.project.show,
+.about.show,
+.service.show,
+.contact.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
