@@ -49,9 +49,7 @@ button {
 }
 
 
-/* =================================
-   NAVIGATION
-================================= */
+/* NAVIGATION */
 
 .header {
   height: 88px;
@@ -111,9 +109,7 @@ button {
 }
 
 
-/* =================================
-   HERO
-================================= */
+/* HERO */
 
 .hero {
   min-height: 780px;
@@ -249,9 +245,7 @@ button {
 }
 
 
-/* =================================
-   GENERAL SECTIONS
-================================= */
+/* GENERAL SECTIONS */
 
 .section {
   padding: 130px 8%;
@@ -280,9 +274,7 @@ button {
 }
 
 
-/* =================================
-   PROJECTS
-================================= */
+/* PROJECTS */
 
 .work {
   background: var(--background-dark);
@@ -413,9 +405,7 @@ button {
 }
 
 
-/* =================================
-   ABOUT
-================================= */
+/* ABOUT */
 
 .about {
   position: relative;
@@ -463,9 +453,7 @@ button {
 }
 
 
-/* =================================
-   SERVICES
-================================= */
+/* SERVICES */
 
 .services {
   background: var(--background-dark);
@@ -518,9 +506,7 @@ button {
 }
 
 
-/* =================================
-   CONTACT
-================================= */
+/* CONTACT */
 
 .contact {
   background: #302B26;
@@ -580,9 +566,7 @@ button {
 }
 
 
-/* =================================
-   FOOTER
-================================= */
+/* FOOTER */
 
 .footer {
   min-height: 100px;
@@ -604,19 +588,17 @@ button {
 }
 
 
-/* =================================
-   SCROLL REVEALS
-================================= */
+/* SCROLL REVEALS */
 
 .reveal {
   opacity: 0;
-  transform: translateY(45px);
-  filter: blur(5px);
+  transform: translateY(38px);
+  filter: blur(3px);
 
   transition:
-    opacity 1s ease,
+    opacity .9s ease,
     transform 1s cubic-bezier(.16,1,.3,1),
-    filter 1s ease;
+    filter .9s ease;
 }
 
 .reveal.visible {
@@ -625,14 +607,17 @@ button {
   filter: blur(0);
 }
 
-.text-reveal .word {
+
+/* WORD REVEALS */
+
+.word-reveal .word {
   display: inline-block;
   overflow: hidden;
   vertical-align: bottom;
   padding-bottom: .08em;
 }
 
-.text-reveal .word-inner {
+.word-reveal .word-inner {
   display: inline-block;
   transform: translateY(110%);
   opacity: 0;
@@ -642,29 +627,13 @@ button {
     opacity .8s ease;
 }
 
-.text-reveal.visible .word-inner {
+.word-reveal.visible .word-inner {
   transform: translateY(0);
   opacity: 1;
 }
 
 
-/* =================================
-   LASER CANVAS
-================================= */
-
-#laserCanvas {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 90;
-}
-
-
-/* =================================
-   RESPONSIVE DESIGN
-================================= */
+/* RESPONSIVE DESIGN */
 
 @media (max-width: 850px) {
   .header {
@@ -832,9 +801,7 @@ button {
 }
 
 
-/* =================================
-   ACCESSIBILITY
-================================= */
+/* REDUCED MOTION ACCESSIBILITY */
 
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -846,7 +813,7 @@ button {
   }
 
   .reveal,
-  .text-reveal .word-inner {
+  .word-reveal .word-inner {
     opacity: 1;
     transform: none;
     filter: none;
