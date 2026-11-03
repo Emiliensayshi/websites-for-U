@@ -1,327 +1,557 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="PixelForge Studio creates thoughtful, modern websites for businesses and creative ideas.">
-  <title>PixelForge — Websites with Purpose</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#F5F1EA">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>PixelForge Studio — Digital Experiences</title>
+    <meta name="description" content="PixelForge Studio creates thoughtful, modern websites and digital experiences.">
 
-  <link rel="stylesheet" href="style.css">
-  <script src="script.js" defer></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-  <header class="header" id="header">
-    <a href="#home" class="logo">PixelForge<span>.</span></a>
 
-    <button class="menu-toggle" id="menuToggle" aria-label="Open navigation" aria-expanded="false">
-      <span></span>
-      <span></span>
-    </button>
+    <!-- NAVIGATION -->
+    <header class="site-header">
+        <nav class="nav container">
 
-    <nav class="nav" id="nav">
-      <a href="#work">Work</a>
-      <a href="#about">About</a>
-      <a href="#services">Services</a>
-      <a href="#contact">Let's talk</a>
-    </nav>
+            <a href="#home" class="logo">
+                Pixel<span>Forge</span><span class="logo-dot">.</span>
+            </a>
 
-    <a href="#contact" class="header-button">Start a project <span>↗</span></a>
-  </header>
+            <button class="menu-toggle" aria-label="Toggle navigation" aria-expanded="false">
+                <span></span>
+                <span></span>
+            </button>
 
-  <main>
-    <!-- HERO -->
-    <section class="hero" id="home">
-      <div class="hero-glow"></div>
-
-      <div class="hero-content">
-        <p class="eyebrow reveal">INDEPENDENT WEB DESIGN & DEVELOPMENT</p>
-
-        <h1 class="hero-title">
-          <span class="word-reveal">Digital</span>
-          <span class="word-reveal">experiences,</span>
-          <span class="word-reveal">built with</span>
-          <span class="word-reveal"><em>purpose.</em></span>
-        </h1>
-
-        <div class="hero-bottom reveal">
-          <p>
-            I design and build modern websites that help ideas,
-            businesses and brands stand out online.
-          </p>
-
-          <a href="#work" class="round-link">
-            <span>Explore my work</span>
-            <span class="round-arrow">↓</span>
-          </a>
-        </div>
-      </div>
-
-      <div class="hero-index">
-        <span>DESIGN</span>
-        <span>DEVELOPMENT</span>
-        <span>CREATIVITY</span>
-      </div>
-    </section>
-
-    <!-- SELECTED WORK -->
-    <section class="work section" id="work">
-      <div class="section-top reveal">
-        <span class="section-number">01 / SELECTED WORK</span>
-        <span class="section-note">A FEW THINGS I'VE MADE</span>
-      </div>
-
-      <div class="work-heading reveal">
-        <h2>Ideas brought<br>to <em>life.</em></h2>
-        <p>
-          A collection of concept projects exploring different
-          styles, industries and digital experiences.
-        </p>
-      </div>
-
-      <div class="projects">
-        <!-- VELA: LIVE PROJECT -->
-        <a
-          href="https://emiliensayshi.github.io/vela-restaurant/"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="project-card project-large reveal"
-          aria-label="Visit the VELA Restaurant website"
-        >
-          <div class="project-image">
-            <img
-              src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1800&q=85"
-              alt="VELA restaurant interior"
-              loading="lazy"
-            >
-            <span class="project-visit">VISIT WEBSITE ↗</span>
-          </div>
-
-          <div class="project-info">
-            <div>
-              <h3>VELA Restaurant</h3>
-              <p>Hospitality · Website design & development</p>
+            <div class="nav-links">
+                <a href="#work">Work</a>
+                <a href="#about">About</a>
+                <a href="#services">Services</a>
+                <a href="#contact" class="nav-contact">Let's talk <span>↗</span></a>
             </div>
-            <span class="project-arrow">↗</span>
-          </div>
-        </a>
 
-        <!-- CONCEPT PROJECT -->
-        <a href="#contact" class="project-card reveal">
-          <div class="project-image">
-            <img
-              src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=85"
-              alt="Modern interior design"
-              loading="lazy"
-            >
-            <span class="project-visit">CONCEPT PROJECT</span>
-          </div>
+        </nav>
+    </header>
 
-          <div class="project-info">
-            <div>
-              <h3>Estate & Co.</h3>
-              <p>Real estate · Brand concept</p>
+
+    <main>
+
+        <!-- HERO -->
+        <section class="hero section-padding" id="home">
+
+            <div class="hero-glow"></div>
+
+            <div class="container hero-container">
+
+                <div class="hero-top reveal">
+                    <span class="eyebrow">
+                        <span class="status-dot"></span>
+                        INDEPENDENT WEB DESIGN STUDIO
+                    </span>
+
+                    <span class="hero-location">MELBOURNE, AUSTRALIA</span>
+                </div>
+
+                <div class="hero-main">
+
+                    <h1 class="hero-title reveal">
+                        Digital experiences,<br>
+                        <span>built with purpose.</span>
+                    </h1>
+
+                    <div class="hero-bottom reveal">
+
+                        <p>
+                            We turn ideas into thoughtful digital experiences.
+                            Websites designed to look good, work beautifully
+                            and make an impression.
+                        </p>
+
+                        <a href="#work" class="text-link">
+                            Explore our work <span>↓</span>
+                        </a>
+
+                    </div>
+
+                </div>
+
+                <div class="hero-footer reveal">
+                    <span>DESIGN THAT MEANS SOMETHING.</span>
+                    <span>SCROLL TO EXPLORE ↓</span>
+                </div>
+
             </div>
-            <span class="project-arrow">↗</span>
-          </div>
-        </a>
 
-        <!-- CONCEPT PROJECT -->
-        <a href="#contact" class="project-card reveal">
-          <div class="project-image">
-            <img
-              src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=85"
-              alt="Creative modern workspace"
-              loading="lazy"
-            >
-            <span class="project-visit">CONCEPT PROJECT</span>
-          </div>
+        </section>
 
-          <div class="project-info">
-            <div>
-              <h3>Studio North</h3>
-              <p>Creative studio · Brand concept</p>
+
+        <!-- SCROLL-DRIVEN 3D SHOWCASE -->
+        <section class="scroll-showcase" id="showcase">
+
+            <div class="showcase-stars" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
             </div>
-            <span class="project-arrow">↗</span>
-          </div>
-        </a>
-      </div>
 
-      <p class="work-footnote reveal">
-        VELA is a live concept website. Estate & Co. and Studio North are design concepts.
-      </p>
-    </section>
+            <div class="showcase-orbit orbit-outer"></div>
+            <div class="showcase-orbit orbit-inner"></div>
 
-    <!-- ABOUT -->
-    <section class="about section" id="about">
-      <div class="section-top reveal">
-        <span class="section-number">02 / A LITTLE ABOUT ME</span>
-        <span class="section-note">THE PERSON BEHIND THE PIXELS</span>
-      </div>
+            <div class="showcase-content">
 
-      <div class="about-content">
-        <div class="about-heading reveal">
-          <p class="eyebrow">DESIGN MINDED. DETAIL FOCUSED.</p>
-          <h2>Good websites<br>start with <em>good ideas.</em></h2>
+                <p class="showcase-label">01 / THE PIXELFORGE APPROACH</p>
+
+                <h2>
+                    Ideas become<br>
+                    <span>digital experiences.</span>
+                </h2>
+
+                <p class="showcase-subtitle">
+                    From the first sketch to the final interaction.
+                    Every detail has a purpose.
+                </p>
+
+            </div>
+
+            <!-- Floating glass cards -->
+
+            <div class="showcase-card card-one">
+                <div class="showcase-icon icon-design">✳</div>
+                <span>01 / DESIGN</span>
+            </div>
+
+            <div class="showcase-card card-two">
+                <div class="showcase-icon icon-code">⌘</div>
+                <span>02 / DEVELOPMENT</span>
+            </div>
+
+            <div class="showcase-card card-three">
+                <div class="showcase-icon icon-experience">↗</div>
+                <span>03 / EXPERIENCE</span>
+            </div>
+
+            <div class="showcase-card card-four">
+                <div class="showcase-icon icon-detail">✦</div>
+                <span>04 / DETAIL</span>
+            </div>
+
+            <div class="showcase-card card-five">
+                <div class="showcase-icon icon-brand">PF</div>
+                <span>PIXELFORGE STUDIO</span>
+            </div>
+
+            <div class="showcase-bottom">
+                <span>BUILT WITH INTENTION</span>
+                <span>SCROLL TO CONTINUE ↓</span>
+            </div>
+
+        </section>
+
+
+        <!-- SELECTED WORK -->
+        <section class="work section-padding" id="work">
+
+            <div class="container">
+
+                <div class="section-heading reveal">
+
+                    <div>
+                        <span class="eyebrow">02 / SELECTED WORK</span>
+                        <h2>Ideas brought<br>to <span>life.</span></h2>
+                    </div>
+
+                    <p>
+                        A collection of digital concepts and projects
+                        exploring design, creativity and development.
+                    </p>
+
+                </div>
+
+
+                <div class="projects-grid">
+
+                    <!-- VELA -->
+                    <a
+                        href="https://emiliensayshi.github.io/vela-restaurant/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="project-card project-large reveal"
+                    >
+
+                        <div class="project-image scroll-3d vela-image">
+
+                            <img
+                                src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1400&q=85"
+                                alt="Elegant restaurant interior"
+                            >
+
+                            <div class="project-overlay">
+                                <span>VIEW WEBSITE ↗</span>
+                            </div>
+
+                        </div>
+
+                        <div class="project-info">
+                            <div>
+                                <h3>VELA Restaurant</h3>
+                                <p>Hospitality / Website Design</p>
+                            </div>
+
+                            <span class="project-number">01</span>
+                        </div>
+
+                    </a>
+
+
+                    <!-- ESTATE & CO -->
+                    <a
+                        href="#contact"
+                        class="project-card reveal"
+                    >
+
+                        <div class="project-image scroll-3d estate-image">
+
+                            <img
+                                src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=85"
+                                alt="Modern luxury living room"
+                                loading="lazy"
+                            >
+
+                            <div class="project-overlay">
+                                <span>COMING SOON ↗</span>
+                            </div>
+
+                        </div>
+
+                        <div class="project-info">
+                            <div>
+                                <h3>Estate & Co.</h3>
+                                <p>Real Estate / Website Design</p>
+                            </div>
+
+                            <span class="project-number">02</span>
+                        </div>
+
+                    </a>
+
+
+                    <!-- STUDIO NORTH -->
+                    <a
+                        href="#contact"
+                        class="project-card reveal"
+                    >
+
+                        <div class="project-image scroll-3d studio-image">
+
+                            <img
+                                src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=85"
+                                alt="Minimal modern creative studio"
+                                loading="lazy"
+                            >
+
+                            <div class="project-overlay">
+                                <span>COMING SOON ↗</span>
+                            </div>
+
+                        </div>
+
+                        <div class="project-info">
+                            <div>
+                                <h3>Studio North</h3>
+                                <p>Creative Studio / Branding</p>
+                            </div>
+
+                            <span class="project-number">03</span>
+                        </div>
+
+                    </a>
+
+                </div>
+
+                <p class="work-note reveal">
+                    VELA is a live concept website. Estate & Co. and Studio North
+                    are design concepts.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- ABOUT -->
+        <section class="about section-padding" id="about">
+
+            <div class="container about-grid">
+
+                <div class="about-heading reveal">
+                    <span class="eyebrow">03 / ABOUT PIXELFORGE</span>
+
+                    <h2>
+                        Good design<br>
+                        goes beyond<br>
+                        <span>appearance.</span>
+                    </h2>
+                </div>
+
+                <div class="about-content reveal">
+
+                    <p class="about-intro">
+                        A website should do more than just exist.
+                        It should communicate, connect and create
+                        a lasting impression.
+                    </p>
+
+                    <p>
+                        PixelForge is an independent digital design concept
+                        focused on building modern, carefully considered
+                        websites for businesses and creative ideas.
+                    </p>
+
+                    <p>
+                        Every project is an opportunity to combine thoughtful
+                        design, useful functionality and attention to detail.
+                    </p>
+
+                    <a href="#contact" class="text-link">
+                        Have a project in mind? <span>↗</span>
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- SERVICES -->
+        <section class="services section-padding" id="services">
+
+            <div class="container">
+
+                <div class="section-heading reveal">
+
+                    <div>
+                        <span class="eyebrow">04 / WHAT WE DO</span>
+                        <h2>Made to work.<br><span>Made to last.</span></h2>
+                    </div>
+
+                    <p>
+                        From the initial idea to the finished website,
+                        each part of the process is designed with purpose.
+                    </p>
+
+                </div>
+
+
+                <div class="services-list">
+
+                    <div class="service-row reveal">
+                        <span class="service-number">01</span>
+
+                        <div class="service-main">
+                            <h3>Website Design</h3>
+                            <p>
+                                Clean, modern layouts that communicate
+                                your brand and make a strong first impression.
+                            </p>
+                        </div>
+
+                        <span class="service-arrow">↗</span>
+                    </div>
+
+
+                    <div class="service-row reveal">
+                        <span class="service-number">02</span>
+
+                        <div class="service-main">
+                            <h3>Website Development</h3>
+                            <p>
+                                Responsive websites built to work smoothly
+                                across desktop, tablet and mobile.
+                            </p>
+                        </div>
+
+                        <span class="service-arrow">↗</span>
+                    </div>
+
+
+                    <div class="service-row reveal">
+                        <span class="service-number">03</span>
+
+                        <div class="service-main">
+                            <h3>Digital Experiences</h3>
+                            <p>
+                                Thoughtful interactions, animations and
+                                details that make a website memorable.
+                            </p>
+                        </div>
+
+                        <span class="service-arrow">↗</span>
+                    </div>
+
+
+                    <div class="service-row reveal">
+                        <span class="service-number">04</span>
+
+                        <div class="service-main">
+                            <h3>Creative Direction</h3>
+                            <p>
+                                Helping shape the visual identity,
+                                atmosphere and direction of a website.
+                            </p>
+                        </div>
+
+                        <span class="service-arrow">↗</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- PROCESS -->
+        <section class="process section-padding">
+
+            <div class="container">
+
+                <div class="process-heading reveal">
+                    <span class="eyebrow">05 / THE PROCESS</span>
+                    <h2>From idea to <span>online.</span></h2>
+                </div>
+
+
+                <div class="process-grid">
+
+                    <div class="process-card reveal">
+                        <span class="process-number">01</span>
+                        <h3>Discover</h3>
+                        <p>
+                            Understanding the idea, the audience
+                            and what the website needs to achieve.
+                        </p>
+                    </div>
+
+
+                    <div class="process-card reveal">
+                        <span class="process-number">02</span>
+                        <h3>Design</h3>
+                        <p>
+                            Creating the layout, visual direction
+                            and overall experience.
+                        </p>
+                    </div>
+
+
+                    <div class="process-card reveal">
+                        <span class="process-number">03</span>
+                        <h3>Build</h3>
+                        <p>
+                            Turning the design into a working,
+                            responsive website.
+                        </p>
+                    </div>
+
+
+                    <div class="process-card reveal">
+                        <span class="process-number">04</span>
+                        <h3>Launch</h3>
+                        <p>
+                            Testing the details and preparing
+                            the finished website to go live.
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- CONTACT -->
+        <section class="contact section-padding" id="contact">
+
+            <div class="container">
+
+                <div class="contact-inner reveal">
+
+                    <span class="eyebrow">06 / HAVE AN IDEA?</span>
+
+                    <h2>
+                        Let's make<br>
+                        something <span>great.</span>
+                    </h2>
+
+                    <p>
+                        Have a business, project or idea that needs
+                        a website? Let's start a conversation.
+                    </p>
+
+                    <a
+                        href="mailto:YOUR-EMAIL-HERE"
+                        class="contact-button"
+                    >
+                        Get in touch <span>↗</span>
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- FOOTER -->
+    <footer class="footer">
+
+        <div class="container">
+
+            <div class="footer-top">
+
+                <a href="#home" class="logo">
+                    Pixel<span>Forge</span><span class="logo-dot">.</span>
+                </a>
+
+                <a href="#home" class="back-top">
+                    BACK TO TOP ↑
+                </a>
+
+            </div>
+
+            <div class="footer-bottom">
+
+                <p>© <span id="current-year"></span> PixelForge Studio.</p>
+
+                <p>DESIGNED WITH PURPOSE.</p>
+
+                <a href="#home">MELBOURNE, AUSTRALIA</a>
+
+            </div>
+
         </div>
 
-        <div class="about-text reveal">
-          <p>
-            PixelForge is an independent web design and development
-            studio focused on creating clean, useful and memorable
-            websites.
-          </p>
+    </footer>
 
-          <p>
-            I enjoy turning ideas into digital experiences, combining
-            thoughtful design with practical development to make
-            websites that look good and work well.
-          </p>
 
-          <a href="#contact" class="text-link">Have an idea? Let's talk <span>↗</span></a>
-        </div>
-      </div>
+    <script src="script.js"></script>
 
-      <div class="about-statement reveal">
-        <span>THE APPROACH</span>
-        <p>Less noise. More <em>meaning.</em></p>
-      </div>
-    </section>
-
-    <!-- SERVICES -->
-    <section class="services section" id="services">
-      <div class="section-top reveal">
-        <span class="section-number">03 / WHAT I DO</span>
-        <span class="section-note">FROM FIRST IDEA TO FINISHED WEBSITE</span>
-      </div>
-
-      <div class="services-heading reveal">
-        <h2>Built around<br><em>your idea.</em></h2>
-        <p>
-          Every project is different. The goal is to create a website
-          that fits the people, purpose and personality behind it.
-        </p>
-      </div>
-
-      <div class="service-list">
-        <article class="service-item reveal">
-          <span class="service-number">01</span>
-          <div>
-            <h3>Website design</h3>
-            <p>Layouts, colours, typography and visual direction.</p>
-          </div>
-          <span class="service-symbol">↗</span>
-        </article>
-
-        <article class="service-item reveal">
-          <span class="service-number">02</span>
-          <div>
-            <h3>Website development</h3>
-            <p>Responsive websites built with HTML, CSS and JavaScript.</p>
-          </div>
-          <span class="service-symbol">↗</span>
-        </article>
-
-        <article class="service-item reveal">
-          <span class="service-number">03</span>
-          <div>
-            <h3>Website refreshes</h3>
-            <p>Giving existing websites a cleaner, more modern feel.</p>
-          </div>
-          <span class="service-symbol">↗</span>
-        </article>
-
-        <article class="service-item reveal">
-          <span class="service-number">04</span>
-          <div>
-            <h3>Creative concepts</h3>
-            <p>Exploring ideas and building digital concepts from scratch.</p>
-          </div>
-          <span class="service-symbol">↗</span>
-        </article>
-      </div>
-    </section>
-
-    <!-- PROCESS -->
-    <section class="process section">
-      <div class="section-top reveal">
-        <span class="section-number">04 / THE PROCESS</span>
-        <span class="section-note">SIMPLE FROM START TO FINISH</span>
-      </div>
-
-      <div class="process-heading reveal">
-        <h2>From idea<br>to <em>online.</em></h2>
-      </div>
-
-      <div class="process-grid">
-        <article class="process-card reveal">
-          <span>01</span>
-          <h3>Discover</h3>
-          <p>We discuss your idea, goals and what you want your website to achieve.</p>
-        </article>
-
-        <article class="process-card reveal">
-          <span>02</span>
-          <h3>Design</h3>
-          <p>We shape the visual direction, layout and overall experience.</p>
-        </article>
-
-        <article class="process-card reveal">
-          <span>03</span>
-          <h3>Build</h3>
-          <p>The design becomes a responsive website that works across devices.</p>
-        </article>
-
-        <article class="process-card reveal">
-          <span>04</span>
-          <h3>Launch</h3>
-          <p>After testing, the finished website is ready to go online.</p>
-        </article>
-      </div>
-    </section>
-
-    <!-- CONTACT -->
-    <section class="contact section" id="contact">
-      <div class="contact-glow"></div>
-
-      <div class="section-top reveal">
-        <span class="section-number">05 / GET IN TOUCH</span>
-        <span class="section-note">HAVE SOMETHING IN MIND?</span>
-      </div>
-
-      <div class="contact-content reveal">
-        <p class="eyebrow">LET'S MAKE SOMETHING GOOD</p>
-        <h2>Have an idea?<br><em>Let's build it.</em></h2>
-        <p>
-          Whether you have a clear plan or just the beginning
-          of an idea, I'd love to hear about it.
-        </p>
-
-        <a
-          href="mailto:YOUR-EMAIL-HERE?subject=PixelForge%20Website%20Enquiry"
-          class="contact-button"
-        >
-          Start a conversation <span>↗</span>
-        </a>
-      </div>
-
-      <div class="contact-bottom">
-        <span>PIXELFORGE STUDIO</span>
-        <span>DESIGNED WITH PURPOSE.</span>
-      </div>
-    </section>
-  </main>
-
-  <footer class="footer">
-    <a href="#home" class="logo">PixelForge<span>.</span></a>
-    <p>Independent web design & development.</p>
-    <a href="#home" class="back-top">BACK TO TOP ↑</a>
-    <span class="copyright">© 2026 PIXELFORGE</span>
-  </footer>
 </body>
 </html>
