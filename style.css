@@ -48,7 +48,6 @@ button {
   color: var(--text);
 }
 
-
 /* NAVIGATION */
 
 .header {
@@ -107,7 +106,6 @@ button {
 .menu-toggle {
   display: none;
 }
-
 
 /* HERO */
 
@@ -244,7 +242,6 @@ button {
   color: #B7AFA4;
 }
 
-
 /* GENERAL SECTIONS */
 
 .section {
@@ -272,7 +269,6 @@ button {
   max-width: 230px;
   line-height: 1.8;
 }
-
 
 /* PROJECTS */
 
@@ -404,7 +400,6 @@ button {
   font-size: 11px;
 }
 
-
 /* ABOUT */
 
 .about {
@@ -451,7 +446,6 @@ button {
   letter-spacing: 2px;
   color: #B7AFA4;
 }
-
 
 /* SERVICES */
 
@@ -504,7 +498,6 @@ button {
 .service:hover .service-arrow {
   transform: translate(5px, -5px);
 }
-
 
 /* CONTACT */
 
@@ -565,7 +558,6 @@ button {
   color: rgba(255,255,255,.035);
 }
 
-
 /* FOOTER */
 
 .footer {
@@ -587,14 +579,12 @@ button {
   letter-spacing: 1px;
 }
 
-
 /* SCROLL REVEALS */
 
 .reveal {
   opacity: 0;
   transform: translateY(38px);
   filter: blur(3px);
-
   transition:
     opacity .9s ease,
     transform 1s cubic-bezier(.16,1,.3,1),
@@ -606,7 +596,6 @@ button {
   transform: translateY(0);
   filter: blur(0);
 }
-
 
 /* WORD REVEALS */
 
@@ -621,7 +610,6 @@ button {
   display: inline-block;
   transform: translateY(110%);
   opacity: 0;
-
   transition:
     transform .9s cubic-bezier(.16,1,.3,1),
     opacity .8s ease;
@@ -632,6 +620,20 @@ button {
   opacity: 1;
 }
 
+/* SCROLL-DRIVEN 3D TEXT FLIP */
+
+.section-number {
+  display: inline-block;
+  perspective: 700px;
+}
+
+.section-number .flip-inner {
+  display: inline-block;
+  transform: rotateX(var(--flip-angle, 75deg));
+  transform-origin: center bottom;
+  backface-visibility: hidden;
+  will-change: transform;
+}
 
 /* RESPONSIVE DESIGN */
 
@@ -696,11 +698,9 @@ button {
     align-items: flex-start;
     gap: 24px;
     border-bottom: 1px solid var(--line);
-
     opacity: 0;
     visibility: hidden;
     transform: translateY(-10px);
-
     transition:
       opacity .3s ease,
       transform .3s ease,
@@ -800,7 +800,6 @@ button {
   }
 }
 
-
 /* REDUCED MOTION ACCESSIBILITY */
 
 @media (prefers-reduced-motion: reduce) {
@@ -818,61 +817,8 @@ button {
     transform: none;
     filter: none;
   }
-   
-/* =========================================
-   PIXELFORGE — 3D SCROLL ROTATION
-========================================= */
 
-.project-image {
-  transform:
-    perspective(1100px)
-    rotateY(var(--scroll-rotate, 0deg))
-    rotateX(var(--scroll-tilt, 0deg))
-    translateY(var(--scroll-lift, 0px));
-
-  transform-style: preserve-3d;
-  will-change: transform;
-  backface-visibility: hidden;
-}
-
-/* Give the images a little extra depth */
-.project-image img {
-  transform: scale(1.06);
-  transition: transform 0.7s ease;
-}
-
-.project-card:hover .project-image img {
-  transform: scale(1.12);
-}
-
-/* Make the VELA project more dramatic */
-.project-large .project-image {
-  transform:
-    perspective(1100px)
-    rotateY(var(--scroll-rotate, 0deg))
-    rotateX(var(--scroll-tilt, 0deg))
-    translateY(var(--scroll-lift, 0px));
-}
-
-/* Smooth transitions when scrolling stops */
-@media (prefers-reduced-motion: reduce) {
-  .project-image {
+  .section-number .flip-inner {
     transform: none !important;
   }
-
-  .project-image img {
-    transition: none !important;
-  }
-}
-
-/* Small 3D flipping section numbers */
-
-.section-number {
-  display: inline-block;
-  transform: perspective(500px) rotateX(var(--flip-angle, 0deg));
-  transform-origin: center;
-  backface-visibility: hidden;
-  will-change: transform;
-}
-
 }
