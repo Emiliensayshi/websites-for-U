@@ -865,4 +865,14 @@ button {
   }
 }
 
+/* Small 3D flipping section numbers */
+
+.section-number {
+  display: inline-block;
+  transform: perspective(500px) rotateX(var(--flip-angle, 0deg));
+  transform-origin: center;
+  backface-visibility: hidden;
+  will-change: transform;
+}
+
 }
