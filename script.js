@@ -165,4 +165,30 @@ if (!reduceMotion) {
 
 window.addEventListener("load", () => {
   document.body.classList.add("loaded");
+
+   
+/* Scroll-driven text flip */
+
+(() => {
+  const labels = document.querySelectorAll(".section-number");
+
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  function updateFlips() {
+    labels.forEach(label => {
+      const rect = label.getBoundingClientRect();
+      const progress = (window.innerHeight - rect.top) /
+        (window.innerHeight + rect.height);
+
+      const angle = Math.max(0, Math.min(1, progress)) * 360;
+
+      label.style.setProperty("--flip-angle", `${angle}deg`);
+    });
+  }
+
+  window.addEventListener("scroll", updateFlips, { passive: true });
+  window.addEventListener("resize", updateFlips);
+  updateFlips();
+})();
+
 });
