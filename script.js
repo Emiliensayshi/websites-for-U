@@ -1,225 +1,259 @@
-
 /* =================================
-   PIXELFORGE — INTERACTIONS
+   PIXELFORGE — MAIN JAVASCRIPT
 ================================= */
 
-const menuToggle = document.getElementById("menuToggle");
-const nav = document.getElementById("nav");
 
-// MOBILE NAVIGATION
+/* =================================
+   MOBILE NAVIGATION
+================================= */
 
-if (menuToggle && nav) {
-  menuToggle.addEventListener("click", () => {
-    const isOpen = nav.classList.toggle("open");
-    menuToggle.setAttribute("aria-expanded", isOpen);
-  });
+const menuToggle = document.querySelector(".menu-toggle");
+const navLinks = document.querySelector(".nav-links");
+const navItems = document.querySelectorAll(".nav-links a");
 
-  nav.querySelectorAll("a").forEach(link => {
-    link.addEventListener("click", () => {
-      nav.classList.remove("open");
-      menuToggle.setAttribute("aria-expanded", "false");
+if (menuToggle && navLinks) {
+
+    menuToggle.addEventListener("click", () => {
+
+        const isOpen = navLinks.classList.toggle("open");
+
+        menuToggle.classList.toggle("active", isOpen);
+        menuToggle.setAttribute("aria-expanded", isOpen);
+        document.body.classList.toggle("menu-open", isOpen);
+
     });
-  });
+
+    navItems.forEach(link => {
+
+        link.addEventListener("click", () => {
+
+            navLinks.classList.remove("open");
+            menuToggle.classList.remove("active");
+            menuToggle.setAttribute("aria-expanded", "false");
+            document.body.classList.remove("menu-open");
+
+        });
+
+    });
+
 }
 
-// REDUCED MOTION
 
-const reduceMotion = window.matchMedia(
-  "(prefers-reduced-motion: reduce)"
-).matches;
-
-// SCROLL REVEALS
+/* =================================
+   SCROLL REVEAL ANIMATIONS
+================================= */
 
 const revealElements = document.querySelectorAll(".reveal");
 
-if (reduceMotion) {
-  revealElements.forEach(element => {
-    element.classList.add("visible");
-  });
-} else {
-  const revealObserver = new IntersectionObserver(
-    (entries, observer) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("visible");
-          observer.unobserve(entry.target);
-        }
-      });
-    },
-    {
-      threshold: 0.12,
-      rootMargin: "0px 0px -40px 0px"
-    }
-  );
+const revealObserver = new IntersectionObserver((entries, observer) => {
 
-  revealElements.forEach(element => {
+    entries.forEach(entry => {
+
+        if (entry.isIntersecting) {
+
+            entry.target.classList.add("visible");
+            observer.unobserve(entry.target);
+
+        }
+
+    });
+
+}, {
+    threshold: 0.12
+});
+
+revealElements.forEach(element => {
     revealObserver.observe(element);
-  });
-}
-
-// WORD-BY-WORD TEXT REVEALS
-
-const textElements = document.querySelectorAll(".word-reveal");
-
-textElements.forEach(element => {
-  const parts = element.innerHTML.split(/(<br\s*\/?>)/gi);
-
-  element.innerHTML = parts.map(part => {
-    if (/^<br/i.test(part)) {
-      return part;
-    }
-
-    return part.split(/(\s+)/).map(word => {
-      if (!word.trim()) {
-        return word;
-      }
-
-      return `
-        <span class="word">
-          <span class="word-inner">${word}</span>
-        </span>
-      `;
-    }).join("");
-  }).join("");
 });
 
-if (reduceMotion) {
-  textElements.forEach(element => {
-    element.classList.add("visible");
-  });
-} else {
-  const textObserver = new IntersectionObserver(
-    (entries, observer) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const words = entry.target.querySelectorAll(
-            ".word-inner"
-          );
 
-          words.forEach((word, index) => {
-            word.style.transitionDelay = `${index * 85}ms`;
-          });
+/* =================================
+   SCROLL-DRIVEN 3D SHOWCASE
+================================= */
 
-          entry.target.classList.add("visible");
-          observer.unobserve(entry.target);
+const showcase = document.querySelector(".scroll-showcase");
+
+const reducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+);
+
+if (showcase) {
+
+    let showcaseTicking = false;
+
+    function updateShowcase() {
+
+        if (reducedMotion.matches) {
+            showcase.style.setProperty("--showcase-progress", 0);
+            showcaseTicking = false;
+            return;
         }
-      });
-    },
-    {
-      threshold: 0.2
-    }
-  );
 
-  textElements.forEach(element => {
-    textObserver.observe(element);
-  });
+        const rect = showcase.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+
+        /*
+           Progress changes as the showcase moves
+           through the viewport.
+
+           0 = beginning
+           1 = end
+        */
+
+        const progress = Math.max(
+            0,
+            Math.min(
+                1,
+                (windowHeight - rect.top) /
+                (windowHeight + rect.height)
+            )
+        );
+
+        showcase.style.setProperty(
+            "--showcase-progress",
+            progress.toFixed(3)
+        );
+
+        showcaseTicking = false;
+
+    }
+
+
+    function requestShowcaseUpdate() {
+
+        if (!showcaseTicking) {
+
+            requestAnimationFrame(updateShowcase);
+            showcaseTicking = true;
+
+        }
+
+    }
+
+
+    window.addEventListener(
+        "scroll",
+        requestShowcaseUpdate,
+        { passive: true }
+    );
+
+    window.addEventListener(
+        "resize",
+        requestShowcaseUpdate
+    );
+
+    reducedMotion.addEventListener(
+        "change",
+        requestShowcaseUpdate
+    );
+
+    updateShowcase();
+
 }
 
-// GENTLE PROJECT IMAGE PARALLAX
 
-if (!reduceMotion) {
-  const projectImages = document.querySelectorAll(
-    ".project-image img"
-  );
+/* =================================
+   3D PROJECT IMAGE SCROLL EFFECT
+================================= */
 
-  let ticking = false;
+const projectImages = document.querySelectorAll(".scroll-3d");
 
-  function updateParallax() {
-    projectImages.forEach(image => {
-      const rect = image.getBoundingClientRect();
+if (projectImages.length > 0) {
 
-      if (rect.bottom < 0 || rect.top > window.innerHeight) {
-        return;
-      }
+    let projectTicking = false;
 
-      const progress =
-        (window.innerHeight - rect.top) /
-        (window.innerHeight + rect.height);
+    function updateProjectImages() {
 
-      const movement = (progress - 0.5) * 12;
+        if (reducedMotion.matches) {
 
-      image.style.setProperty(
-        "--parallax-y",
-        `${movement}px`
-      );
-    });
+            projectImages.forEach(image => {
+                image.style.setProperty("--scroll-rotate", "0deg");
+                image.style.setProperty("--scroll-tilt", "0deg");
+                image.style.setProperty("--scroll-lift", "0px");
+            });
 
-    ticking = false;
-  }
+            projectTicking = false;
+            return;
 
-  window.addEventListener("scroll", () => {
-    if (!ticking) {
-      requestAnimationFrame(updateParallax);
-      ticking = true;
+        }
+
+        const windowHeight = window.innerHeight;
+
+        projectImages.forEach(image => {
+
+            const rect = image.getBoundingClientRect();
+
+            const imageCentre = rect.top + rect.height / 2;
+            const distanceFromCentre = imageCentre - windowHeight / 2;
+
+            const normalisedDistance = Math.max(
+                -1,
+                Math.min(
+                    1,
+                    distanceFromCentre / (windowHeight / 1.5)
+                )
+            );
+
+            const rotate = normalisedDistance * -3;
+            const tilt = normalisedDistance * 2;
+            const lift = Math.abs(normalisedDistance) * -8;
+
+            image.style.setProperty(
+                "--scroll-rotate",
+                `${rotate}deg`
+            );
+
+            image.style.setProperty(
+                "--scroll-tilt",
+                `${tilt}deg`
+            );
+
+            image.style.setProperty(
+                "--scroll-lift",
+                `${lift}px`
+            );
+
+        });
+
+        projectTicking = false;
+
     }
-  }, { passive: true });
 
-  updateParallax();
+
+    function requestProjectUpdate() {
+
+        if (!projectTicking) {
+
+            requestAnimationFrame(updateProjectImages);
+            projectTicking = true;
+
+        }
+
+    }
+
+
+    window.addEventListener(
+        "scroll",
+        requestProjectUpdate,
+        { passive: true }
+    );
+
+    window.addEventListener(
+        "resize",
+        requestProjectUpdate
+    );
+
+    updateProjectImages();
+
 }
 
-// SCROLL-DRIVEN 3D TEXT FLIP
 
-const flipLabels = document.querySelectorAll(".section-number");
+/* =================================
+   AUTOMATIC FOOTER YEAR
+================================= */
 
-if (!reduceMotion && flipLabels.length) {
-  flipLabels.forEach(label => {
-    // Wrap the original label text once.
-    if (!label.querySelector(".flip-inner")) {
-      const inner = document.createElement("span");
-      inner.className = "flip-inner";
-      inner.textContent = label.textContent.trim();
+const yearElement = document.querySelector("#current-year");
 
-      label.textContent = "";
-      label.appendChild(inner);
-    }
-  });
-
-  let flipTicking = false;
-
-  function updateTextFlips() {
-    flipLabels.forEach(label => {
-      const rect = label.getBoundingClientRect();
-
-      // Progress from below the screen to the middle.
-      const start = window.innerHeight * 0.9;
-      const end = window.innerHeight * 0.55;
-
-      let progress = (start - rect.top) / (start - end);
-      progress = Math.max(0, Math.min(1, progress));
-
-      // Smooth easing.
-      progress = progress * progress * (3 - 2 * progress);
-
-      // Rotate from 75 degrees to 0 degrees.
-      const angle = 75 * (1 - progress);
-
-      label.style.setProperty(
-        "--flip-angle",
-        `${angle}deg`
-      );
-    });
-
-    flipTicking = false;
-  }
-
-  function requestFlipUpdate() {
-    if (!flipTicking) {
-      requestAnimationFrame(updateTextFlips);
-      flipTicking = true;
-    }
-  }
-
-  window.addEventListener("scroll", requestFlipUpdate, {
-    passive: true
-  });
-
-  window.addEventListener("resize", requestFlipUpdate);
-
-  updateTextFlips();
+if (yearElement) {
+    yearElement.textContent = new Date().getFullYear();
 }
-
-// PAGE LOAD
-
-window.addEventListener("load", () => {
-  document.body.classList.add("loaded");
-});
