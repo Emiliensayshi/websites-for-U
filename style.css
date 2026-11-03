@@ -818,4 +818,51 @@ button {
     transform: none;
     filter: none;
   }
+   
+/* =========================================
+   PIXELFORGE — 3D SCROLL ROTATION
+========================================= */
+
+.project-image {
+  transform:
+    perspective(1100px)
+    rotateY(var(--scroll-rotate, 0deg))
+    rotateX(var(--scroll-tilt, 0deg))
+    translateY(var(--scroll-lift, 0px));
+
+  transform-style: preserve-3d;
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Give the images a little extra depth */
+.project-image img {
+  transform: scale(1.06);
+  transition: transform 0.7s ease;
+}
+
+.project-card:hover .project-image img {
+  transform: scale(1.12);
+}
+
+/* Make the VELA project more dramatic */
+.project-large .project-image {
+  transform:
+    perspective(1100px)
+    rotateY(var(--scroll-rotate, 0deg))
+    rotateX(var(--scroll-tilt, 0deg))
+    translateY(var(--scroll-lift, 0px));
+}
+
+/* Smooth transitions when scrolling stops */
+@media (prefers-reduced-motion: reduce) {
+  .project-image {
+    transform: none !important;
+  }
+
+  .project-image img {
+    transition: none !important;
+  }
+}
+
 }
