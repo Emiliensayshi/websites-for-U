@@ -1,317 +1,232 @@
+/* =========================================
+   PIXELFORGE — MAIN JAVASCRIPT
+========================================= */
 
-/* =================================
-   PIXELFORGE — JAVASCRIPT
-   Smooth 3D showcase animation
-================================= */
+// FOOTER YEAR
+const year = document.getElementById("year");
 
-
-/* MOBILE NAVIGATION */
-
-const menuToggle = document.getElementById("menuToggle");
-const navLinks = document.getElementById("navLinks");
-
-if (menuToggle && navLinks) {
-    menuToggle.addEventListener("click", () => {
-        const isOpen = navLinks.classList.toggle("open");
-        menuToggle.setAttribute("aria-expanded", isOpen);
-    });
-
-    navLinks.querySelectorAll("a").forEach(link => {
-        link.addEventListener("click", () => {
-            navLinks.classList.remove("open");
-            menuToggle.setAttribute("aria-expanded", "false");
-        });
-    });
+if (year) {
+  year.textContent = new Date().getFullYear();
 }
 
 
-/* FOOTER YEAR */
+// MOBILE NAVIGATION
+const menuToggle = document.querySelector(".menu-toggle");
+const mainNav = document.querySelector(".main-nav");
 
-const yearElement = document.getElementById("year");
+if (menuToggle && mainNav) {
+  menuToggle.addEventListener("click", () => {
+    const isOpen = mainNav.classList.toggle("open");
 
-if (yearElement) {
-    yearElement.textContent = new Date().getFullYear();
+    menuToggle.classList.toggle("active", isOpen);
+    menuToggle.setAttribute("aria-expanded", String(isOpen));
+  });
+
+  mainNav.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", () => {
+      mainNav.classList.remove("open");
+      menuToggle.classList.remove("active");
+      menuToggle.setAttribute("aria-expanded", "false");
+    });
+  });
 }
 
 
-/* =================================
-   GENERAL SCROLL REVEAL
-================================= */
-
-const revealElements = document.querySelectorAll(
-    ".section-heading, .project-card, .about-left, .about-right, .service-item, .process-card, .contact-content"
+// SECTION REVEALS
+const revealObserver = new IntersectionObserver(
+  entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("show");
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  },
+  {
+    threshold: 0.12
+  }
 );
 
-revealElements.forEach(element => {
-    element.classList.add("reveal");
-});
-
-const revealObserver = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add("active");
-            revealObserver.unobserve(entry.target);
-        }
-    });
-}, {
-    threshold: 0.12
-});
-
-revealElements.forEach(element => {
-    revealObserver.observe(element);
+document.querySelectorAll(".reveal").forEach(element => {
+  revealObserver.observe(element);
 });
 
 
-/* =================================
-   PIXELFORGE 3D SHOWCASE
-================================= */
+// =========================================
+// DARK ORBIT SHOWCASE ANIMATION
+// =========================================
 
 const showcase = document.querySelector(".scroll-showcase");
-const showcaseStage = document.querySelector(".showcase-stage");
+const stage = document.querySelector(".showcase-stage");
+const cards = document.querySelectorAll(".showcase-card");
 
-const showcaseCards = document.querySelectorAll(".showcase-card");
-const showcaseWords = document.querySelectorAll(".showcase-word");
-const showcaseSubtitle = document.querySelector(".showcase-subtitle");
+const words = document.querySelectorAll(".showcase-word");
+const subtitle = document.querySelector(".showcase-subtitle");
 
-const reducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)"
+const reduceMotion = window.matchMedia(
+  "(prefers-reduced-motion: reduce)"
 ).matches;
 
-let targetProgress = 0;
-let currentProgress = 0;
+let showcaseProgress = 0;
 let animationFrame = null;
 
 
-/* Smooth easing */
+// Smooth easing function
+function smoothStep(value) {
+  return value * value * (3 - 2 * value);
+}
 
+
+// Keep values between 0 and 1
 function clamp(value, min = 0, max = 1) {
-    return Math.min(Math.max(value, min), max);
-}
-
-function easeOutCubic(value) {
-    return 1 - Math.pow(1 - clamp(value), 3);
-}
-
-function easeInOut(value) {
-    return value < 0.5
-        ? 4 * value * value * value
-        : 1 - Math.pow(-2 * value + 2, 3) / 2;
+  return Math.max(min, Math.min(max, value));
 }
 
 
-/* Calculate how far through the showcase we are */
+// Calculate showcase scroll progress
+function getShowcaseProgress() {
+  if (!showcase) return 0;
 
-function calculateProgress() {
-    if (!showcase) return 0;
+  const rect = showcase.getBoundingClientRect();
 
-    const rect = showcase.getBoundingClientRect();
+  const scrollDistance = showcase.offsetHeight - window.innerHeight;
 
-    const scrollDistance =
-        showcase.offsetHeight - window.innerHeight;
+  if (scrollDistance <= 0) return 0;
 
-    if (scrollDistance <= 0) return 0;
+  const travelled = -rect.top;
 
-    return clamp(-rect.top / scrollDistance);
+  return clamp(travelled / scrollDistance);
 }
 
 
-/* =================================
-   3D CARD MOVEMENT
-================================= */
+// Update every card's position
+function updateShowcase() {
+  if (!showcase || !stage) return;
 
-function animateCards(progress) {
+  const progress = showcaseProgress;
 
-    const isMobile = window.innerWidth < 650;
+  const isMobile = window.innerWidth <= 650;
 
-    const radiusX = isMobile ? 125 : 365;
-    const radiusY = isMobile ? 115 : 215;
+  // Orbit dimensions
+  const radiusX = isMobile ? 115 : 310;
+  const radiusY = isMobile ? 95 : 190;
 
-    // Cards emerge from darkness during the first part.
-    const emergence = easeOutCubic(
-        (progress - 0.015) / 0.36
+  cards.forEach((card, index) => {
+
+    // Each card starts its appearance at a slightly different time
+    const revealStart = 0.025 + index * 0.055;
+
+    const revealProgress = clamp(
+      (progress - revealStart) / 0.42
     );
 
-    // Later, the cards begin slowly orbiting.
-    const orbitProgress = easeInOut(
-        clamp((progress - 0.25) / 0.65)
-    );
+    const reveal = smoothStep(revealProgress);
 
-    // Cards fade into the background as the text takes over.
-    const fadeOut = easeInOut(
-        clamp((progress - 0.64) / 0.29)
-    );
+    // Cards gradually travel out from the centre
+    const currentRadiusX = radiusX * (0.12 + reveal * 0.88);
+    const currentRadiusY = radiusY * (0.12 + reveal * 0.88);
 
-    showcaseCards.forEach((card, index) => {
+    // Each card has its own starting position
+    const startingAngle = (index / cards.length) * Math.PI * 2;
 
-        const baseAngle =
-            (index / showcaseCards.length) * Math.PI * 2;
+    // Smooth full orbit as the page scrolls
+    const orbitAngle =
+      startingAngle +
+      progress * Math.PI * 2.1;
 
-        const angle =
-            baseAngle + orbitProgress * 0.9;
+    // Position around the centre
+    const x = Math.cos(orbitAngle) * currentRadiusX;
+    const y = Math.sin(orbitAngle) * currentRadiusY;
 
-        // Position around the centre.
-        const x = Math.cos(angle) * radiusX * emergence;
-        const y = Math.sin(angle) * radiusY * emergence;
+    // Gradually grow instead of jumping towards the screen
+    const scale = 0.38 + reveal * 0.52;
 
-        // Grow towards the viewer.
-        const scale = 0.24 + emergence * 0.82;
+    // Cards gently turn as they travel around the centre
+    const rotation = (orbitAngle * 180 / Math.PI) + 90;
 
-        // Move from deep inside the screen towards the viewer.
-        const depth = -1050 * (1 - emergence);
+    // Gentle 3D tilt, not a dramatic forward movement
+    const tiltX = Math.sin(orbitAngle) * 9;
+    const tiltY = Math.cos(orbitAngle) * 11;
 
-        // Give every card a different 3D angle.
-        const rotateX =
-            Math.sin(angle) * (isMobile ? 9 : 14);
+    // Cards slowly become clearer
+    const opacity = reveal;
+    const blur = (1 - reveal) * 13;
+    const brightness = 0.35 + reveal * 0.65;
 
-        const rotateY =
-            Math.cos(angle) * (isMobile ? 11 : 17);
+    card.style.opacity = opacity.toFixed(3);
 
-        const rotateZ =
-            Math.sin(angle + 0.5) * 7;
+    card.style.filter =
+      `blur(${blur.toFixed(2)}px) brightness(${brightness.toFixed(2)})`;
 
-        // Subtle floating movement.
-        const float = Math.sin(
-            progress * Math.PI * 4 + index * 1.4
-        ) * 10 * emergence;
+    card.style.transform = `
+      translate(-50%, -50%)
+      translate3d(${x.toFixed(2)}px, ${y.toFixed(2)}px, 0)
+      rotate(${rotation.toFixed(2)}deg)
+      rotateX(${tiltX.toFixed(2)}deg)
+      rotateY(${tiltY.toFixed(2)}deg)
+      scale(${scale.toFixed(3)})
+    `;
 
-        const opacity = Math.min(
-            emergence * 1.8,
-            1
-        ) * (1 - fadeOut * 0.82);
-
-        card.style.opacity = opacity.toFixed(3);
-
-        card.style.zIndex = Math.round(
-            5 + Math.sin(angle) * 3
-        );
-
-        card.style.transform = `
-            translate(-50%, -50%)
-            translate3d(${x}px, ${y + float}px, ${depth}px)
-            rotateX(${rotateX}deg)
-            rotateY(${rotateY}deg)
-            rotateZ(${rotateZ}deg)
-            scale(${scale})
-        `;
-
-        // Slightly reduce lighting while the cards are hidden.
-        card.style.filter = `
-            brightness(${0.65 + emergence * 0.35})
-            saturate(${0.75 + emergence * 0.25})
-        `;
-
-    });
-
-}
+    // Keep cards in front of the centre as they emerge
+    card.style.zIndex = String(10 + Math.round(
+      (Math.sin(orbitAngle) + 1) * 5
+    ));
+  });
 
 
-/* =================================
-   WORD REVEAL
-================================= */
+  // WORD-BY-WORD REVEAL
+  const wordPoints = [0.32, 0.43, 0.54];
 
-function animateWords(progress) {
-
-    const revealPoints = [
-        0.35,
-        0.47,
-        0.59,
-        0.71
-    ];
-
-    showcaseWords.forEach((word, index) => {
-
-        const visible = progress >= revealPoints[index];
-
-        word.classList.toggle("visible", visible);
-
-    });
-
-    if (showcaseSubtitle) {
-        showcaseSubtitle.classList.toggle(
-            "visible",
-            progress >= 0.83
-        );
-    }
-
-}
-
-
-/* =================================
-   MAIN ANIMATION LOOP
-================================= */
-
-function renderShowcase() {
-
-    if (!showcase || !showcaseStage) return;
-
-    if (reducedMotion) {
-        currentProgress = targetProgress;
+  words.forEach((word, index) => {
+    if (progress >= wordPoints[index]) {
+      word.classList.add("visible");
     } else {
-        // Smoothly catch up with the scroll position.
-        currentProgress +=
-            (targetProgress - currentProgress) * 0.105;
-
-        if (Math.abs(targetProgress - currentProgress) < 0.0005) {
-            currentProgress = targetProgress;
-        }
+      word.classList.remove("visible");
     }
+  });
 
-    animateCards(currentProgress);
-    animateWords(currentProgress);
 
-    showcaseStage.style.setProperty(
-        "--showcase-progress",
-        currentProgress
-    );
-
-    if (Math.abs(targetProgress - currentProgress) > 0.0005) {
-        animationFrame = requestAnimationFrame(renderShowcase);
-    } else {
-        animationFrame = null;
-    }
-
+  // SUBTITLE
+  if (progress >= 0.69) {
+    subtitle?.classList.add("visible");
+  } else {
+    subtitle?.classList.remove("visible");
+  }
 }
 
 
-/* Request an animation update */
-
+// Request animation frame keeps scrolling smooth
 function requestShowcaseUpdate() {
+  if (animationFrame) return;
 
-    targetProgress = calculateProgress();
-
-    if (animationFrame === null) {
-        animationFrame = requestAnimationFrame(renderShowcase);
-    }
-
+  animationFrame = requestAnimationFrame(() => {
+    showcaseProgress = getShowcaseProgress();
+    updateShowcase();
+    animationFrame = null;
+  });
 }
 
 
-/* Listen to scrolling and resizing */
+// Listen for scrolling and resizing
+if (showcase && !reduceMotion) {
+  window.addEventListener("scroll", requestShowcaseUpdate, {
+    passive: true
+  });
 
-window.addEventListener(
-    "scroll",
-    requestShowcaseUpdate,
-    { passive: true }
-);
+  window.addEventListener("resize", requestShowcaseUpdate);
 
-window.addEventListener(
-    "resize",
-    requestShowcaseUpdate
-);
+  requestShowcaseUpdate();
+}
 
 
-/* Initial state */
+// Reduced-motion fallback
+if (reduceMotion) {
+  cards.forEach(card => {
+    card.style.opacity = "1";
+    card.style.filter = "none";
+    card.style.transform = "translate(-50%, -50%)";
+  });
 
-if (showcase && showcaseStage) {
-
-    showcaseCards.forEach(card => {
-        card.classList.remove("arrived");
-        card.style.opacity = "0";
-    });
-
-    targetProgress = calculateProgress();
-    currentProgress = targetProgress;
-
-    renderShowcase();
-
+  words.forEach(word => word.classList.add("visible"));
+  subtitle?.classList.add("visible");
 }
