@@ -1,5 +1,5 @@
 /* =================================
-   PIXELFORGE — MAIN JAVASCRIPT
+   PIXELFORGE — JAVASCRIPT
 ================================= */
 
 
@@ -7,57 +7,52 @@
    MOBILE NAVIGATION
 ================================= */
 
-const menuToggle = document.querySelector(".menu-toggle");
-const navLinks = document.querySelector(".nav-links");
-const navItems = document.querySelectorAll(".nav-links a");
+const menuToggle = document.getElementById("menuToggle");
+const navLinks = document.getElementById("navLinks");
 
 if (menuToggle && navLinks) {
-
     menuToggle.addEventListener("click", () => {
-
-        const isOpen = navLinks.classList.toggle("open");
-
-        menuToggle.classList.toggle("active", isOpen);
-        menuToggle.setAttribute("aria-expanded", isOpen);
-        document.body.classList.toggle("menu-open", isOpen);
-
+        navLinks.classList.toggle("open");
     });
 
-    navItems.forEach(link => {
-
+    navLinks.querySelectorAll("a").forEach(link => {
         link.addEventListener("click", () => {
-
             navLinks.classList.remove("open");
-            menuToggle.classList.remove("active");
-            menuToggle.setAttribute("aria-expanded", "false");
-            document.body.classList.remove("menu-open");
-
         });
-
     });
-
 }
 
 
 /* =================================
-   SCROLL REVEAL ANIMATIONS
+   FOOTER YEAR
 ================================= */
 
-const revealElements = document.querySelectorAll(".reveal");
+const yearElement = document.getElementById("year");
 
-const revealObserver = new IntersectionObserver((entries, observer) => {
+if (yearElement) {
+    yearElement.textContent = new Date().getFullYear();
+}
 
+
+/* =================================
+   SCROLL REVEAL
+================================= */
+
+const revealElements = document.querySelectorAll(
+    ".section-heading, .project-card, .about-left, .about-right, .service-item, .process-card, .contact-content"
+);
+
+revealElements.forEach(element => {
+    element.classList.add("reveal");
+});
+
+const revealObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-
         if (entry.isIntersecting) {
-
-            entry.target.classList.add("visible");
-            observer.unobserve(entry.target);
-
+            entry.target.classList.add("active");
+            revealObserver.unobserve(entry.target);
         }
-
     });
-
 }, {
     threshold: 0.12
 });
@@ -68,192 +63,165 @@ revealElements.forEach(element => {
 
 
 /* =================================
-   SCROLL-DRIVEN 3D SHOWCASE
+   PINNED SCROLL SHOWCASE
 ================================= */
 
 const showcase = document.querySelector(".scroll-showcase");
+const showcaseStage = document.querySelector(".showcase-stage");
 
-const reducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)"
-);
+const showcaseCards = document.querySelectorAll(".showcase-card");
+const showcaseWords = document.querySelectorAll(".showcase-word");
+const showcaseSubtitle = document.querySelector(".showcase-subtitle");
+
+let showcaseProgress = 0;
+let showcaseFrame = null;
+
+
+/* Cards animate into position */
+
+window.addEventListener("load", () => {
+
+    showcaseCards.forEach((card, index) => {
+
+        setTimeout(() => {
+            card.classList.add("arrived");
+        }, 350 + index * 180);
+
+    });
+
+});
+
+
+/* Calculate showcase scroll progress */
+
+function updateShowcase() {
+
+    if (!showcase || !showcaseStage) return;
+
+    const rect = showcase.getBoundingClientRect();
+
+    const totalScrollDistance =
+        showcase.offsetHeight - window.innerHeight;
+
+    const distanceTravelled = -rect.top;
+
+    showcaseProgress = Math.min(
+        Math.max(distanceTravelled / totalScrollDistance, 0),
+        1
+    );
+
+
+    /* Reveal words progressively */
+
+    showcaseWords.forEach((word, index) => {
+
+        const revealPoint = 0.12 + index * 0.19;
+
+        if (showcaseProgress >= revealPoint) {
+            word.classList.add("visible");
+        } else {
+            word.classList.remove("visible");
+        }
+
+    });
+
+
+    /* Reveal subtitle */
+
+    if (showcaseProgress >= 0.78) {
+        showcaseSubtitle.classList.add("visible");
+    } else {
+        showcaseSubtitle.classList.remove("visible");
+    }
+
+
+    /* Move cards around the centre */
+
+    const angle = showcaseProgress * Math.PI * 2;
+
+    showcaseCards.forEach((card, index) => {
+
+        const cardAngle =
+            angle + (index * (Math.PI * 2 / showcaseCards.length));
+
+        const radiusX = window.innerWidth < 650 ? 135 : 360;
+        const radiusY = window.innerWidth < 650 ? 120 : 210;
+
+        const x = Math.cos(cardAngle) * radiusX;
+        const y = Math.sin(cardAngle) * radiusY;
+
+        const rotation = showcaseProgress * 360 + index * 35;
+
+        const scale = 0.85 + Math.sin(cardAngle) * 0.12;
+
+        card.style.transform = `
+            translate(-50%, -50%)
+            translate(${x}px, ${y}px)
+            rotate(${rotation}deg)
+            scale(${scale})
+        `;
+
+    });
+
+
+    /* Subtle orbit movement */
+
+    showcaseStage.style.setProperty(
+        "--showcase-progress",
+        showcaseProgress
+    );
+
+}
+
+
+/* Avoid running the scroll calculation excessively */
+
+function requestShowcaseUpdate() {
+
+    if (showcaseFrame !== null) return;
+
+    showcaseFrame = requestAnimationFrame(() => {
+        updateShowcase();
+        showcaseFrame = null;
+    });
+
+}
+
+window.addEventListener("scroll", requestShowcaseUpdate, {
+    passive: true
+});
+
+window.addEventListener("resize", requestShowcaseUpdate);
+
+updateShowcase();
+
+
+/* =================================
+   SHOWCASE INTRO
+================================= */
 
 if (showcase) {
 
-    let showcaseTicking = false;
+    const showcaseObserver = new IntersectionObserver((entries) => {
 
-    function updateShowcase() {
+        entries.forEach(entry => {
 
-        if (reducedMotion.matches) {
-            showcase.style.setProperty("--showcase-progress", 0);
-            showcaseTicking = false;
-            return;
-        }
+            if (entry.isIntersecting) {
+                showcaseCards.forEach((card, index) => {
 
-        const rect = showcase.getBoundingClientRect();
-        const windowHeight = window.innerHeight;
+                    setTimeout(() => {
+                        card.classList.add("arrived");
+                    }, index * 150);
 
-        /*
-           Progress changes as the showcase moves
-           through the viewport.
-
-           0 = beginning
-           1 = end
-        */
-
-        const progress = Math.max(
-            0,
-            Math.min(
-                1,
-                (windowHeight - rect.top) /
-                (windowHeight + rect.height)
-            )
-        );
-
-        showcase.style.setProperty(
-            "--showcase-progress",
-            progress.toFixed(3)
-        );
-
-        showcaseTicking = false;
-
-    }
-
-
-    function requestShowcaseUpdate() {
-
-        if (!showcaseTicking) {
-
-            requestAnimationFrame(updateShowcase);
-            showcaseTicking = true;
-
-        }
-
-    }
-
-
-    window.addEventListener(
-        "scroll",
-        requestShowcaseUpdate,
-        { passive: true }
-    );
-
-    window.addEventListener(
-        "resize",
-        requestShowcaseUpdate
-    );
-
-    reducedMotion.addEventListener(
-        "change",
-        requestShowcaseUpdate
-    );
-
-    updateShowcase();
-
-}
-
-
-/* =================================
-   3D PROJECT IMAGE SCROLL EFFECT
-================================= */
-
-const projectImages = document.querySelectorAll(".scroll-3d");
-
-if (projectImages.length > 0) {
-
-    let projectTicking = false;
-
-    function updateProjectImages() {
-
-        if (reducedMotion.matches) {
-
-            projectImages.forEach(image => {
-                image.style.setProperty("--scroll-rotate", "0deg");
-                image.style.setProperty("--scroll-tilt", "0deg");
-                image.style.setProperty("--scroll-lift", "0px");
-            });
-
-            projectTicking = false;
-            return;
-
-        }
-
-        const windowHeight = window.innerHeight;
-
-        projectImages.forEach(image => {
-
-            const rect = image.getBoundingClientRect();
-
-            const imageCentre = rect.top + rect.height / 2;
-            const distanceFromCentre = imageCentre - windowHeight / 2;
-
-            const normalisedDistance = Math.max(
-                -1,
-                Math.min(
-                    1,
-                    distanceFromCentre / (windowHeight / 1.5)
-                )
-            );
-
-            const rotate = normalisedDistance * -3;
-            const tilt = normalisedDistance * 2;
-            const lift = Math.abs(normalisedDistance) * -8;
-
-            image.style.setProperty(
-                "--scroll-rotate",
-                `${rotate}deg`
-            );
-
-            image.style.setProperty(
-                "--scroll-tilt",
-                `${tilt}deg`
-            );
-
-            image.style.setProperty(
-                "--scroll-lift",
-                `${lift}px`
-            );
+                });
+            }
 
         });
 
-        projectTicking = false;
+    }, {
+        threshold: 0.15
+    });
 
-    }
+    showcaseObserver.observe(showcase);
 
-
-    function requestProjectUpdate() {
-
-        if (!projectTicking) {
-
-            requestAnimationFrame(updateProjectImages);
-            projectTicking = true;
-
-        }
-
-    }
-
-
-    window.addEventListener(
-        "scroll",
-        requestProjectUpdate,
-        { passive: true }
-    );
-
-    window.addEventListener(
-        "resize",
-        requestProjectUpdate
-    );
-
-    updateProjectImages();
-
-}
-
-
-/* =================================
-   AUTOMATIC FOOTER YEAR
-================================= */
-
-const yearElement = document.querySelector("#current-year");
-
-if (yearElement) {
-    yearElement.textContent = new Date().getFullYear();
 }
