@@ -1,31 +1,31 @@
+
 /* =================================
    PIXELFORGE — JAVASCRIPT
+   Smooth 3D showcase animation
 ================================= */
 
 
-/* =================================
-   MOBILE NAVIGATION
-================================= */
+/* MOBILE NAVIGATION */
 
 const menuToggle = document.getElementById("menuToggle");
 const navLinks = document.getElementById("navLinks");
 
 if (menuToggle && navLinks) {
     menuToggle.addEventListener("click", () => {
-        navLinks.classList.toggle("open");
+        const isOpen = navLinks.classList.toggle("open");
+        menuToggle.setAttribute("aria-expanded", isOpen);
     });
 
     navLinks.querySelectorAll("a").forEach(link => {
         link.addEventListener("click", () => {
             navLinks.classList.remove("open");
+            menuToggle.setAttribute("aria-expanded", "false");
         });
     });
 }
 
 
-/* =================================
-   FOOTER YEAR
-================================= */
+/* FOOTER YEAR */
 
 const yearElement = document.getElementById("year");
 
@@ -35,7 +35,7 @@ if (yearElement) {
 
 
 /* =================================
-   SCROLL REVEAL
+   GENERAL SCROLL REVEAL
 ================================= */
 
 const revealElements = document.querySelectorAll(
@@ -46,7 +46,7 @@ revealElements.forEach(element => {
     element.classList.add("reveal");
 });
 
-const revealObserver = new IntersectionObserver((entries) => {
+const revealObserver = new IntersectionObserver(entries => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
             entry.target.classList.add("active");
@@ -63,7 +63,7 @@ revealElements.forEach(element => {
 
 
 /* =================================
-   PINNED SCROLL SHOWCASE
+   PIXELFORGE 3D SHOWCASE
 ================================= */
 
 const showcase = document.querySelector(".scroll-showcase");
@@ -73,155 +73,245 @@ const showcaseCards = document.querySelectorAll(".showcase-card");
 const showcaseWords = document.querySelectorAll(".showcase-word");
 const showcaseSubtitle = document.querySelector(".showcase-subtitle");
 
-let showcaseProgress = 0;
-let showcaseFrame = null;
+const reducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+).matches;
+
+let targetProgress = 0;
+let currentProgress = 0;
+let animationFrame = null;
 
 
-/* Cards animate into position */
+/* Smooth easing */
 
-window.addEventListener("load", () => {
+function clamp(value, min = 0, max = 1) {
+    return Math.min(Math.max(value, min), max);
+}
 
-    showcaseCards.forEach((card, index) => {
+function easeOutCubic(value) {
+    return 1 - Math.pow(1 - clamp(value), 3);
+}
 
-        setTimeout(() => {
-            card.classList.add("arrived");
-        }, 350 + index * 180);
-
-    });
-
-});
+function easeInOut(value) {
+    return value < 0.5
+        ? 4 * value * value * value
+        : 1 - Math.pow(-2 * value + 2, 3) / 2;
+}
 
 
-/* Calculate showcase scroll progress */
+/* Calculate how far through the showcase we are */
 
-function updateShowcase() {
-
-    if (!showcase || !showcaseStage) return;
+function calculateProgress() {
+    if (!showcase) return 0;
 
     const rect = showcase.getBoundingClientRect();
 
-    const totalScrollDistance =
+    const scrollDistance =
         showcase.offsetHeight - window.innerHeight;
 
-    const distanceTravelled = -rect.top;
+    if (scrollDistance <= 0) return 0;
 
-    showcaseProgress = Math.min(
-        Math.max(distanceTravelled / totalScrollDistance, 0),
-        1
+    return clamp(-rect.top / scrollDistance);
+}
+
+
+/* =================================
+   3D CARD MOVEMENT
+================================= */
+
+function animateCards(progress) {
+
+    const isMobile = window.innerWidth < 650;
+
+    const radiusX = isMobile ? 125 : 365;
+    const radiusY = isMobile ? 115 : 215;
+
+    // Cards emerge from darkness during the first part.
+    const emergence = easeOutCubic(
+        (progress - 0.015) / 0.36
     );
 
+    // Later, the cards begin slowly orbiting.
+    const orbitProgress = easeInOut(
+        clamp((progress - 0.25) / 0.65)
+    );
 
-    /* Reveal words progressively */
-
-    showcaseWords.forEach((word, index) => {
-
-        const revealPoint = 0.12 + index * 0.19;
-
-        if (showcaseProgress >= revealPoint) {
-            word.classList.add("visible");
-        } else {
-            word.classList.remove("visible");
-        }
-
-    });
-
-
-    /* Reveal subtitle */
-
-    if (showcaseProgress >= 0.78) {
-        showcaseSubtitle.classList.add("visible");
-    } else {
-        showcaseSubtitle.classList.remove("visible");
-    }
-
-
-    /* Move cards around the centre */
-
-    const angle = showcaseProgress * Math.PI * 2;
+    // Cards fade into the background as the text takes over.
+    const fadeOut = easeInOut(
+        clamp((progress - 0.64) / 0.29)
+    );
 
     showcaseCards.forEach((card, index) => {
 
-        const cardAngle =
-            angle + (index * (Math.PI * 2 / showcaseCards.length));
+        const baseAngle =
+            (index / showcaseCards.length) * Math.PI * 2;
 
-        const radiusX = window.innerWidth < 650 ? 135 : 360;
-        const radiusY = window.innerWidth < 650 ? 120 : 210;
+        const angle =
+            baseAngle + orbitProgress * 0.9;
 
-        const x = Math.cos(cardAngle) * radiusX;
-        const y = Math.sin(cardAngle) * radiusY;
+        // Position around the centre.
+        const x = Math.cos(angle) * radiusX * emergence;
+        const y = Math.sin(angle) * radiusY * emergence;
 
-        const rotation = showcaseProgress * 360 + index * 35;
+        // Grow towards the viewer.
+        const scale = 0.24 + emergence * 0.82;
 
-        const scale = 0.85 + Math.sin(cardAngle) * 0.12;
+        // Move from deep inside the screen towards the viewer.
+        const depth = -1050 * (1 - emergence);
+
+        // Give every card a different 3D angle.
+        const rotateX =
+            Math.sin(angle) * (isMobile ? 9 : 14);
+
+        const rotateY =
+            Math.cos(angle) * (isMobile ? 11 : 17);
+
+        const rotateZ =
+            Math.sin(angle + 0.5) * 7;
+
+        // Subtle floating movement.
+        const float = Math.sin(
+            progress * Math.PI * 4 + index * 1.4
+        ) * 10 * emergence;
+
+        const opacity = Math.min(
+            emergence * 1.8,
+            1
+        ) * (1 - fadeOut * 0.82);
+
+        card.style.opacity = opacity.toFixed(3);
+
+        card.style.zIndex = Math.round(
+            5 + Math.sin(angle) * 3
+        );
 
         card.style.transform = `
             translate(-50%, -50%)
-            translate(${x}px, ${y}px)
-            rotate(${rotation}deg)
+            translate3d(${x}px, ${y + float}px, ${depth}px)
+            rotateX(${rotateX}deg)
+            rotateY(${rotateY}deg)
+            rotateZ(${rotateZ}deg)
             scale(${scale})
+        `;
+
+        // Slightly reduce lighting while the cards are hidden.
+        card.style.filter = `
+            brightness(${0.65 + emergence * 0.35})
+            saturate(${0.75 + emergence * 0.25})
         `;
 
     });
 
-
-    /* Subtle orbit movement */
-
-    showcaseStage.style.setProperty(
-        "--showcase-progress",
-        showcaseProgress
-    );
-
 }
-
-
-/* Avoid running the scroll calculation excessively */
-
-function requestShowcaseUpdate() {
-
-    if (showcaseFrame !== null) return;
-
-    showcaseFrame = requestAnimationFrame(() => {
-        updateShowcase();
-        showcaseFrame = null;
-    });
-
-}
-
-window.addEventListener("scroll", requestShowcaseUpdate, {
-    passive: true
-});
-
-window.addEventListener("resize", requestShowcaseUpdate);
-
-updateShowcase();
 
 
 /* =================================
-   SHOWCASE INTRO
+   WORD REVEAL
 ================================= */
 
-if (showcase) {
+function animateWords(progress) {
 
-    const showcaseObserver = new IntersectionObserver((entries) => {
+    const revealPoints = [
+        0.35,
+        0.47,
+        0.59,
+        0.71
+    ];
 
-        entries.forEach(entry => {
+    showcaseWords.forEach((word, index) => {
 
-            if (entry.isIntersecting) {
-                showcaseCards.forEach((card, index) => {
+        const visible = progress >= revealPoints[index];
 
-                    setTimeout(() => {
-                        card.classList.add("arrived");
-                    }, index * 150);
+        word.classList.toggle("visible", visible);
 
-                });
-            }
-
-        });
-
-    }, {
-        threshold: 0.15
     });
 
-    showcaseObserver.observe(showcase);
+    if (showcaseSubtitle) {
+        showcaseSubtitle.classList.toggle(
+            "visible",
+            progress >= 0.83
+        );
+    }
+
+}
+
+
+/* =================================
+   MAIN ANIMATION LOOP
+================================= */
+
+function renderShowcase() {
+
+    if (!showcase || !showcaseStage) return;
+
+    if (reducedMotion) {
+        currentProgress = targetProgress;
+    } else {
+        // Smoothly catch up with the scroll position.
+        currentProgress +=
+            (targetProgress - currentProgress) * 0.105;
+
+        if (Math.abs(targetProgress - currentProgress) < 0.0005) {
+            currentProgress = targetProgress;
+        }
+    }
+
+    animateCards(currentProgress);
+    animateWords(currentProgress);
+
+    showcaseStage.style.setProperty(
+        "--showcase-progress",
+        currentProgress
+    );
+
+    if (Math.abs(targetProgress - currentProgress) > 0.0005) {
+        animationFrame = requestAnimationFrame(renderShowcase);
+    } else {
+        animationFrame = null;
+    }
+
+}
+
+
+/* Request an animation update */
+
+function requestShowcaseUpdate() {
+
+    targetProgress = calculateProgress();
+
+    if (animationFrame === null) {
+        animationFrame = requestAnimationFrame(renderShowcase);
+    }
+
+}
+
+
+/* Listen to scrolling and resizing */
+
+window.addEventListener(
+    "scroll",
+    requestShowcaseUpdate,
+    { passive: true }
+);
+
+window.addEventListener(
+    "resize",
+    requestShowcaseUpdate
+);
+
+
+/* Initial state */
+
+if (showcase && showcaseStage) {
+
+    showcaseCards.forEach(card => {
+        card.classList.remove("arrived");
+        card.style.opacity = "0";
+    });
+
+    targetProgress = calculateProgress();
+    currentProgress = targetProgress;
+
+    renderShowcase();
 
 }
