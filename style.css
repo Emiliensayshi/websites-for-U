@@ -1,317 +1,319 @@
 
-/* =================================
-   PIXELFORGE — JAVASCRIPT
-   Smooth 3D showcase animation
-================================= */
+/* ==========================================
+   PIXELFORGE — CINEMATIC 3D SHOWCASE
+========================================== */
 
+/* Deep cinematic background */
 
-/* MOBILE NAVIGATION */
-
-const menuToggle = document.getElementById("menuToggle");
-const navLinks = document.getElementById("navLinks");
-
-if (menuToggle && navLinks) {
-    menuToggle.addEventListener("click", () => {
-        const isOpen = navLinks.classList.toggle("open");
-        menuToggle.setAttribute("aria-expanded", isOpen);
-    });
-
-    navLinks.querySelectorAll("a").forEach(link => {
-        link.addEventListener("click", () => {
-            navLinks.classList.remove("open");
-            menuToggle.setAttribute("aria-expanded", "false");
-        });
-    });
-}
-
-
-/* FOOTER YEAR */
-
-const yearElement = document.getElementById("year");
-
-if (yearElement) {
-    yearElement.textContent = new Date().getFullYear();
-}
-
-
-/* =================================
-   GENERAL SCROLL REVEAL
-================================= */
-
-const revealElements = document.querySelectorAll(
-    ".section-heading, .project-card, .about-left, .about-right, .service-item, .process-card, .contact-content"
-);
-
-revealElements.forEach(element => {
-    element.classList.add("reveal");
-});
-
-const revealObserver = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add("active");
-            revealObserver.unobserve(entry.target);
-        }
-    });
-}, {
-    threshold: 0.12
-});
-
-revealElements.forEach(element => {
-    revealObserver.observe(element);
-});
-
-
-/* =================================
-   PIXELFORGE 3D SHOWCASE
-================================= */
-
-const showcase = document.querySelector(".scroll-showcase");
-const showcaseStage = document.querySelector(".showcase-stage");
-
-const showcaseCards = document.querySelectorAll(".showcase-card");
-const showcaseWords = document.querySelectorAll(".showcase-word");
-const showcaseSubtitle = document.querySelector(".showcase-subtitle");
-
-const reducedMotion = window.matchMedia(
-    "(prefers-reduced-motion: reduce)"
-).matches;
-
-let targetProgress = 0;
-let currentProgress = 0;
-let animationFrame = null;
-
-
-/* Smooth easing */
-
-function clamp(value, min = 0, max = 1) {
-    return Math.min(Math.max(value, min), max);
-}
-
-function easeOutCubic(value) {
-    return 1 - Math.pow(1 - clamp(value), 3);
-}
-
-function easeInOut(value) {
-    return value < 0.5
-        ? 4 * value * value * value
-        : 1 - Math.pow(-2 * value + 2, 3) / 2;
-}
-
-
-/* Calculate how far through the showcase we are */
-
-function calculateProgress() {
-    if (!showcase) return 0;
-
-    const rect = showcase.getBoundingClientRect();
-
-    const scrollDistance =
-        showcase.offsetHeight - window.innerHeight;
-
-    if (scrollDistance <= 0) return 0;
-
-    return clamp(-rect.top / scrollDistance);
-}
-
-
-/* =================================
-   3D CARD MOVEMENT
-================================= */
-
-function animateCards(progress) {
-
-    const isMobile = window.innerWidth < 650;
-
-    const radiusX = isMobile ? 125 : 365;
-    const radiusY = isMobile ? 115 : 215;
-
-    // Cards emerge from darkness during the first part.
-    const emergence = easeOutCubic(
-        (progress - 0.015) / 0.36
-    );
-
-    // Later, the cards begin slowly orbiting.
-    const orbitProgress = easeInOut(
-        clamp((progress - 0.25) / 0.65)
-    );
-
-    // Cards fade into the background as the text takes over.
-    const fadeOut = easeInOut(
-        clamp((progress - 0.64) / 0.29)
-    );
-
-    showcaseCards.forEach((card, index) => {
-
-        const baseAngle =
-            (index / showcaseCards.length) * Math.PI * 2;
-
-        const angle =
-            baseAngle + orbitProgress * 0.9;
-
-        // Position around the centre.
-        const x = Math.cos(angle) * radiusX * emergence;
-        const y = Math.sin(angle) * radiusY * emergence;
-
-        // Grow towards the viewer.
-        const scale = 0.24 + emergence * 0.82;
-
-        // Move from deep inside the screen towards the viewer.
-        const depth = -1050 * (1 - emergence);
-
-        // Give every card a different 3D angle.
-        const rotateX =
-            Math.sin(angle) * (isMobile ? 9 : 14);
-
-        const rotateY =
-            Math.cos(angle) * (isMobile ? 11 : 17);
-
-        const rotateZ =
-            Math.sin(angle + 0.5) * 7;
-
-        // Subtle floating movement.
-        const float = Math.sin(
-            progress * Math.PI * 4 + index * 1.4
-        ) * 10 * emergence;
-
-        const opacity = Math.min(
-            emergence * 1.8,
-            1
-        ) * (1 - fadeOut * 0.82);
-
-        card.style.opacity = opacity.toFixed(3);
-
-        card.style.zIndex = Math.round(
-            5 + Math.sin(angle) * 3
+.scroll-showcase {
+    background:
+        radial-gradient(
+            ellipse at 50% 48%,
+            #39332D 0%,
+            #292621 38%,
+            #171613 100%
         );
-
-        card.style.transform = `
-            translate(-50%, -50%)
-            translate3d(${x}px, ${y + float}px, ${depth}px)
-            rotateX(${rotateX}deg)
-            rotateY(${rotateY}deg)
-            rotateZ(${rotateZ}deg)
-            scale(${scale})
-        `;
-
-        // Slightly reduce lighting while the cards are hidden.
-        card.style.filter = `
-            brightness(${0.65 + emergence * 0.35})
-            saturate(${0.75 + emergence * 0.25})
-        `;
-
-    });
-
+    perspective: 1600px;
+    perspective-origin: 50% 45%;
 }
 
+/* Add a subtle warm light behind the cards */
 
-/* =================================
-   WORD REVEAL
-================================= */
-
-function animateWords(progress) {
-
-    const revealPoints = [
-        0.35,
-        0.47,
-        0.59,
-        0.71
-    ];
-
-    showcaseWords.forEach((word, index) => {
-
-        const visible = progress >= revealPoints[index];
-
-        word.classList.toggle("visible", visible);
-
-    });
-
-    if (showcaseSubtitle) {
-        showcaseSubtitle.classList.toggle(
-            "visible",
-            progress >= 0.83
+.showcase-stage {
+    perspective: 1600px;
+    perspective-origin: 50% 45%;
+    transform-style: preserve-3d;
+    background:
+        radial-gradient(
+            ellipse at 50% 50%,
+            rgba(217, 164, 119, 0.10),
+            transparent 48%
         );
-    }
-
 }
 
+/* Ambient lighting changes as the cards emerge */
 
-/* =================================
-   MAIN ANIMATION LOOP
-================================= */
+.showcase-stage::before {
+    content: "";
+    position: absolute;
+    inset: -20%;
+    z-index: -1;
+    pointer-events: none;
+    background:
+        radial-gradient(
+            circle at 50% 50%,
+            rgba(217, 164, 119, 0.13),
+            transparent 35%
+        );
+    opacity: calc(0.15 + var(--showcase-progress, 0) * 0.85);
+    transform: scale(
+        calc(0.7 + var(--showcase-progress, 0) * 0.5)
+    );
+    transition: opacity 0.2s linear;
+}
 
-function renderShowcase() {
+/* Dark vignette around the edges */
 
-    if (!showcase || !showcaseStage) return;
+.showcase-stage::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 8;
+    pointer-events: none;
+    background: radial-gradient(
+        ellipse at center,
+        transparent 30%,
+        rgba(10, 9, 8, 0.30) 100%
+    );
+}
 
-    if (reducedMotion) {
-        currentProgress = targetProgress;
-    } else {
-        // Smoothly catch up with the scroll position.
-        currentProgress +=
-            (targetProgress - currentProgress) * 0.105;
+/* ==========================================
+   3D CARDS
+========================================== */
 
-        if (Math.abs(targetProgress - currentProgress) < 0.0005) {
-            currentProgress = targetProgress;
-        }
-    }
+.showcase-card {
+    left: 50%;
+    top: 50%;
 
-    animateCards(currentProgress);
-    animateWords(currentProgress);
+    width: 245px;
+    height: 285px;
 
-    showcaseStage.style.setProperty(
-        "--showcase-progress",
-        currentProgress
+    opacity: 0;
+    transform-style: preserve-3d;
+    transform-origin: center center;
+
+    border: 1px solid rgba(255,255,255,0.17);
+    border-radius: 12px;
+
+    background: linear-gradient(
+        145deg,
+        #49443D,
+        #302D28 65%,
+        #25231F
     );
 
-    if (Math.abs(targetProgress - currentProgress) > 0.0005) {
-        animationFrame = requestAnimationFrame(renderShowcase);
-    } else {
-        animationFrame = null;
+    box-shadow:
+        0 15px 30px rgba(0,0,0,0.2),
+        0 35px 80px rgba(0,0,0,0.4),
+        0 0 35px rgba(217,164,119,0.06),
+        inset 0 1px 1px rgba(255,255,255,0.16);
+
+    transition: none !important;
+
+    will-change: transform, opacity, filter;
+
+    backface-visibility: hidden;
+}
+
+/* Soft reflective highlight */
+
+.showcase-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 5;
+
+    background: linear-gradient(
+        135deg,
+        rgba(255,255,255,0.15),
+        transparent 25%,
+        transparent 70%,
+        rgba(255,255,255,0.035)
+    );
+}
+
+/* Subtle illuminated edge */
+
+.showcase-card::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 6;
+
+    border: 1px solid rgba(217,164,119,0.12);
+}
+
+/* Give previews a little more depth */
+
+.mini-browser,
+.estate-preview,
+.north-preview,
+.design-preview,
+.code-preview {
+    transform: translateZ(5px);
+}
+
+/* Captions */
+
+.card-caption {
+    color: rgba(245,241,234,0.65);
+    letter-spacing: 1.5px;
+    font-size: 8px;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+/* ==========================================
+   MORE INTERESTING 3D ORBITS
+========================================== */
+
+.showcase-orbit {
+    border-color: rgba(245,241,234,0.075);
+    box-shadow: 0 0 35px rgba(217,164,119,0.015);
+    transform: rotateX(62deg) rotateZ(-12deg);
+}
+
+.orbit-one {
+    border-color: rgba(217,164,119,0.14);
+}
+
+.orbit-two {
+    border-color: rgba(245,241,234,0.075);
+}
+
+.orbit-three {
+    border-color: rgba(245,241,234,0.035);
+}
+
+/* ==========================================
+   TYPOGRAPHY ANIMATION
+========================================== */
+
+.showcase-heading {
+    z-index: 7;
+    transform: translateZ(80px);
+    perspective: 1000px;
+}
+
+.showcase-word {
+    opacity: 0;
+    transform:
+        translateY(65px)
+        translateZ(-100px)
+        rotateX(-15deg)
+        scale(0.88);
+
+    filter: blur(15px);
+
+    transition:
+        opacity 1s cubic-bezier(.16,1,.3,1),
+        transform 1.2s cubic-bezier(.16,1,.3,1),
+        filter 1.1s ease;
+
+    text-shadow:
+        0 10px 35px rgba(0,0,0,0.18);
+}
+
+.showcase-word.visible {
+    opacity: 1;
+    transform:
+        translateY(0)
+        translateZ(0)
+        rotateX(0deg)
+        scale(1);
+
+    filter: blur(0);
+}
+
+/* Orange words get a gentle glow */
+
+.word-two,
+.word-four {
+    text-shadow:
+        0 0 35px rgba(217,164,119,0.12);
+}
+
+/* Subtitle */
+
+.showcase-subtitle {
+    z-index: 7;
+    letter-spacing: 0.4px;
+    transform: translateY(25px) translateZ(40px);
+    filter: blur(5px);
+
+    transition:
+        opacity 1s ease,
+        transform 1s cubic-bezier(.16,1,.3,1),
+        filter 1s ease;
+}
+
+.showcase-subtitle.visible {
+    transform: translateY(0) translateZ(40px);
+    filter: blur(0);
+}
+
+/* ==========================================
+   RESPONSIVE 3D SETTINGS
+========================================== */
+
+@media (max-width: 900px) {
+
+    .showcase-card {
+        width: 190px;
+        height: 225px;
     }
 
+    .showcase-stage {
+        perspective: 1200px;
+    }
 }
 
+@media (max-width: 650px) {
 
-/* Request an animation update */
-
-function requestShowcaseUpdate() {
-
-    targetProgress = calculateProgress();
-
-    if (animationFrame === null) {
-        animationFrame = requestAnimationFrame(renderShowcase);
+    .scroll-showcase {
+        height: 260vh;
+        perspective: 1000px;
     }
 
+    .showcase-stage {
+        perspective: 1000px;
+        min-height: 520px;
+    }
+
+    .showcase-card {
+        width: 125px;
+        height: 155px;
+        border-radius: 8px;
+    }
+
+    .showcase-word {
+        font-size: clamp(39px, 11vw, 65px);
+        letter-spacing: -3px;
+    }
+
+    .showcase-orbit {
+        transform: rotateX(65deg) rotateZ(-12deg);
+    }
+
+    .showcase-stage::after {
+        background: radial-gradient(
+            ellipse at center,
+            transparent 20%,
+            rgba(10,9,8,0.3) 100%
+        );
+    }
 }
 
+/* ==========================================
+   ACCESSIBILITY
+========================================== */
 
-/* Listen to scrolling and resizing */
+@media (prefers-reduced-motion: reduce) {
 
-window.addEventListener(
-    "scroll",
-    requestShowcaseUpdate,
-    { passive: true }
-);
+    .showcase-card {
+        transition: none !important;
+    }
 
-window.addEventListener(
-    "resize",
-    requestShowcaseUpdate
-);
+    .showcase-word,
+    .showcase-subtitle {
+        transition: none !important;
+    }
 
-
-/* Initial state */
-
-if (showcase && showcaseStage) {
-
-    showcaseCards.forEach(card => {
-        card.classList.remove("arrived");
-        card.style.opacity = "0";
-    });
-
-    targetProgress = calculateProgress();
-    currentProgress = targetProgress;
-
-    renderShowcase();
-
+    .showcase-stage::before {
+        transition: none !important;
+    }
 }
+`
